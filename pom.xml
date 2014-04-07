@@ -34,7 +34,7 @@
    </scm>
    <properties>
       <tika.version>1.4</tika.version>
-      <solr.version>4.5.0</solr.version>
+      <solr.version>4.4.0</solr.version>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
    </properties>
    <build>
@@ -83,6 +83,7 @@
          <artifactId>opencsv</artifactId>
          <version>2.0</version>
       </dependency>
+      
       <dependency>
          <groupId>org.apache.solr</groupId>
          <artifactId>solr</artifactId>
@@ -95,14 +96,15 @@
          <version>${solr.version}</version>
       </dependency>
       <dependency>
-         <groupId>org.slf4j</groupId>
-         <artifactId>slf4j-log4j12</artifactId>
-         <version>1.7.5</version>
-      </dependency>
-      <dependency>
          <groupId>org.apache.solr</groupId>
          <artifactId>solr-solrj</artifactId>
          <version>${solr.version}</version>
+      </dependency>
+      
+      <dependency>
+         <groupId>org.slf4j</groupId>
+         <artifactId>slf4j-log4j12</artifactId>
+         <version>1.7.5</version>
       </dependency>
       <dependency>
          <groupId>org.apache.hadoop</groupId>
@@ -111,11 +113,11 @@
       </dependency>
    </dependencies>
 
-  <repositories>
-    <repository>
-      <id>cloudera</id>
-      <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
-    </repository>
-  </repositories>
-  
+   <repositories>
+      <repository>
+         <id>cloudera</id>
+         <url>https://repository.cloudera.com/artifactory/cloudera-repos/</url>
+      </repository>
+   </repositories>
+
 </project>
