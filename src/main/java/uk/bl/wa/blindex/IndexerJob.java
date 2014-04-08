@@ -255,8 +255,8 @@ public class IndexerJob {
 		conf.setInputFormat(TextInputFormat.class);
 		conf.setOutputFormat(TextOutputFormat.class);
 		// Get input and output folder from CLARGS:
-		FileInputFormat.setInputPaths(conf, new Path(args[0]));
-		FileOutputFormat.setOutputPath(conf, new Path(args[1]));
+		FileInputFormat.setInputPaths(conf, new Path(args[1]));
+		FileOutputFormat.setOutputPath(conf, new Path(args[2]));
 
 		conf.setSpeculativeExecution(false);
 
