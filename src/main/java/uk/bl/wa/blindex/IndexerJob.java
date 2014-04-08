@@ -256,7 +256,7 @@ public class IndexerJob {
 		conf.setOutputFormat(TextOutputFormat.class);
 		// /user/admin/jisc2-xmls/table_sample.csv
 		FileInputFormat.setInputPaths(conf, new Path(
-				"/user/admin/jisc2-xmls/table_sample.csv"));
+				"/user/admin/jisc2-xmls/table_sample_100.csv"));
 		// /user/admin/jist2/solr
 		FileOutputFormat.setOutputPath(conf, new Path("/user/admin/jisc2/job"));
 
