@@ -120,7 +120,7 @@ public class IndexerJob {
 				doc.setField("id", doc_id);
 				doc.setField("simpletitle_s", simpletitle);
 				doc.setField("originalname_s", originalname);
-				doc.setField("domid_i", domid);
+				doc.setField("domid_l", domid);
 				doc.setField("page_i", i);
 				doc.setField("content", docs.get(i));
 				output.collect(new IntWritable(sp.getPartition(doc_id, doc)),
