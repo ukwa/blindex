@@ -224,9 +224,8 @@ public class IndexerJob {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		JobConf conf = new JobConf(IndexerJob.class);
+		JobConf conf = new JobConf(IndexerJob.Map.class);
 		conf.setJobName("JISC2_Indexer");
-		conf.setJar("blindex-1.0.0-SNAPSHOT-job.jar");
 		conf.setOutputKeyClass(Text.class);
 		conf.setOutputValueClass(IntWritable.class);
 		conf.setMapperClass(Map.class);
