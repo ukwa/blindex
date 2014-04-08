@@ -228,6 +228,8 @@ public class IndexerJob {
 
 		JobConf conf = new JobConf(IndexerJob.Map.class);
 		conf.setJobName("JISC2_Indexer");
+		conf.setMapOutputKeyClass(IntWritable.class);
+		conf.setMapOutputValueClass(SolrInputDocumentWritable.class);
 		conf.setMapperClass(Map.class);
 		conf.setNumMapTasks(4);
 		conf.setCombinerClass(Reduce.class);
