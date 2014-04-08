@@ -249,7 +249,6 @@ public class IndexerJob {
 		conf.setMapOutputValueClass(SolrInputDocumentWritable.class);
 		conf.setMapperClass(Map.class);
 		conf.setNumMapTasks(4);
-		conf.setCombinerClass(Reduce.class);
 		conf.setReducerClass(Reduce.class);
 		conf.setNumReduceTasks(4);
 		conf.setInputFormat(TextInputFormat.class);
