@@ -143,7 +143,7 @@ public class IndexerJob {
 			Reducer<IntWritable, SolrInputDocumentWritable, Text, IntWritable> {
 
 		private FileSystem fs;
-		private Path solrHomeDir;
+		private Path solrHomeDir = null;
 		private Path outputDir;
 		private String shardPrefix = "shard";
 
@@ -156,14 +156,17 @@ public class IndexerJob {
 		 */
 		@Override
 		public void configure(JobConf job) {
+			LOG.info("Calling configure()...");
 			super.configure(job);
 			try {
 				// Filesystem:
 				fs = FileSystem.get(job);
 				// Input:
 				solrHomeDir = findSolrConfig(job, solrHomeZipName);
+				LOG.info("Found solrHomeDir " + solrHomeDir);
 			} catch (IOException e) {
 				e.printStackTrace();
+				LOG.error("FAILED in reducer configuration: " + e);
 			}
 			// Output:
 			outputDir = new Path("/user/admin/jisc2/solr/");
@@ -178,6 +181,7 @@ public class IndexerJob {
 
 			Path outputShardDir = new Path(outputDir, this.shardPrefix + slice);
 
+			//
 			EmbeddedSolrServer solrServer = JISC2TextExtractor
 					.createEmbeddedSolrServer(solrHomeDir, fs, outputShardDir);
 
@@ -200,14 +204,17 @@ public class IndexerJob {
 	    Path solrHome = null;
 		Path[] localArchives = DistributedCache.getLocalCacheArchives(conf);
 	    if (localArchives.length == 0) {
+			LOG.error("No local cache archives.");
 			throw new IOException(String.format("No local cache archives."));
 	    }
 	    for (Path unpackedDir : localArchives) {
-	      if (unpackedDir.getName().equals(zipName)) {
-	        LOG.info("Using this unpacked directory as solr home: {}", unpackedDir);
-	        solrHome = unpackedDir;
-	        break;
-	      }
+			LOG.info("Looking at: " + unpackedDir + " for " + zipName);
+			if (unpackedDir.getName().equals(zipName)) {
+				LOG.info("Using this unpacked directory as solr home: {}",
+						unpackedDir);
+				solrHome = unpackedDir;
+				break;
+			}
 	    }
 	    return solrHome;
 	  }
