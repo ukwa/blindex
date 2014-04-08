@@ -164,7 +164,8 @@ public class JISC2TextExtractor extends DefaultHandler {
 		LOG.info("Attempting to set data dir to:" + dataDirStr);
 		props.setProperty("solr.data.dir", dataDirStr);
 		props.setProperty("solr.home", solrHomeDir.toString());
-		props.setProperty("solr.hdfs.home", "/solr");
+		props.setProperty("solr.solr.home", solrHomeDir.toString());
+		props.setProperty("solr.hdfs.home", outputDir.toString());
 
 		SolrResourceLoader loader = new SolrResourceLoader(
 				solrHomeDir.toString(), null, props);
