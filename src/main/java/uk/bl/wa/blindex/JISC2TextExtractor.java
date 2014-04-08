@@ -178,12 +178,15 @@ public class JISC2TextExtractor extends DefaultHandler {
 
 		CoreContainer container = new CoreContainer(loader);
 		container.load();
-		CoreDescriptor descr = new CoreDescriptor(container, "core1",
-				solrHomeDir.toString());
+		LOG.error("Setting up core1 descriptor...");
+		CoreDescriptor descr = new CoreDescriptor(container, "core1", new Path(
+				solrHomeDir, "jisc2").toString());
 
 		descr.setDataDir(dataDirStr);
 		descr.setCoreProperties(props);
+		LOG.error("Creating core1... " + descr.getConfigName());
 		SolrCore core = container.create(descr);
+		LOG.error("Registering core1...");
 		container.register(core, false);
 
 		System.setProperty("solr.hdfs.nrtcachingdirectory", "false");
