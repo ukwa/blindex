@@ -51,6 +51,10 @@ public class Solate {
 			throw new IllegalArgumentException("Incompatible shards: + "
 					+ shards + " for docCollection: " + docCollection);
 		}
+		LOG.info("Got slices: " + docCollection.getSlices().size());
+		for (Slice s : docCollection.getSlices()) {
+			LOG.info("Slice: " + s.getName());
+		}
 		List<Slice> slices = new ZooKeeperInspector()
 				.getSortedSlices(docCollection.getSlices());
 		if (slices.size() != shards) {

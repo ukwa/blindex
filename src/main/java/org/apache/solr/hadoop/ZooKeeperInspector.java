@@ -38,7 +38,6 @@ import org.apache.solr.common.cloud.ZkNodeProps;
 import org.apache.solr.common.cloud.ZkStateReader;
 import org.apache.solr.common.util.StrUtils;
 import org.apache.zookeeper.KeeperException;
-import org.restlet.engine.util.AlphaNumericComparator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

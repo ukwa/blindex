@@ -37,8 +37,8 @@ public class IndexerJobTest {
 		mapDriver.resetOutput();
 	    mapDriver.runTest();
 	    
-	    mapDriver.withInput(new LongWritable(), new Text(
-								"\"1484\",\"lsidyv10a49\",\"NULL\",\"York Herald\",\"10\",\"YOHD-1877-04-07.xml\",\"7423129\",\"2010-08-27 09:56:59.94\",\"562949954724281\""));
+		// mapDriver.withInput(new LongWritable(), new Text(
+		// "\"1484\",\"lsidyv10a49\",\"NULL\",\"York Herald\",\"10\",\"YOHD-1877-04-07.xml\",\"7423129\",\"2010-08-27 09:56:59.94\",\"562949954724281\""));
 		// mapDriver.withAllOutput(outputRecords);
 		mapDriver.runTest();
 	  }

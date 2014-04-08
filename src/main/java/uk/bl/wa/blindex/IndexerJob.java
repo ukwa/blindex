@@ -95,7 +95,7 @@ public class IndexerJob {
 			String entityuid = parts[1];
 			String simpletitle = parts[3];
 			String originalname = parts[5];
-			String domid = parts[5];
+			String domid = parts[8];
 
 			// Construct URL:
 			URL xmlUrl = new URL(domidUrlPrefix + domid);
