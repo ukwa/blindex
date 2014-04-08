@@ -1,6 +1,5 @@
 package uk.bl.wa.blindex;
 
-import java.io.File;
 import java.io.IOException;
 import java.net.URI;
 import java.net.URL;
@@ -166,7 +165,7 @@ public class IndexerJob {
 				e.printStackTrace();
 			}
 			// Output:
-			outputDir = new Path("/solr/jisc2/");
+			outputDir = new Path("/user/admin/jisc2/solr/");
 		}
 
 
@@ -236,14 +235,18 @@ public class IndexerJob {
 		conf.setNumReduceTasks(4);
 		conf.setInputFormat(TextInputFormat.class);
 		conf.setOutputFormat(TextOutputFormat.class);
-		FileInputFormat.setInputPaths(conf, new Path(args[0]));
-		FileOutputFormat.setOutputPath(conf, new Path(args[1]));
+		// /user/admin/jisc2-xmls/table_sample.csv
+		FileInputFormat.setInputPaths(conf, new Path(
+				"/user/admin/jisc2-xmls/table_sample.csv"));
+		// /user/admin/jist2/solr
+		FileOutputFormat.setOutputPath(conf, new Path("/user/admin/jisc2/job"));
 
-		File solrHomeZip = new File("src/main/resources/jisc2/solr_home.zip");
+		// File solrHomeZip = new
+		// File("src/main/resources/jisc2/solr_home.zip");
 
-		Path zipPath = new Path("/tmp", solrHomeZipName);
+		Path zipPath = new Path("/user/admin/jisc2-xmls/solr_home.zip");
 		FileSystem fs = FileSystem.get(conf);
-		fs.copyFromLocalFile(new Path(solrHomeZip.toString()), zipPath);
+		// fs.copyFromLocalFile(new Path(solrHomeZip.toString()), zipPath);
 		final URI baseZipUrl = fs.getUri().resolve(
 				zipPath.toString() + '#' + solrHomeZipName);
 
