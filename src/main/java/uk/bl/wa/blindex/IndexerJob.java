@@ -226,6 +226,7 @@ public class IndexerJob {
 
 		JobConf conf = new JobConf(IndexerJob.class);
 		conf.setJobName("JISC2_Indexer");
+		conf.setJarByClass(IndexerJob.class);
 		conf.setOutputKeyClass(Text.class);
 		conf.setOutputValueClass(IntWritable.class);
 		conf.setMapperClass(Map.class);
