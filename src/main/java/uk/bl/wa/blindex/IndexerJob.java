@@ -28,6 +28,7 @@ import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.hadoop.Solate;
+import org.apache.solr.hadoop.SolrInputDocumentWritable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,7 +54,7 @@ public class IndexerJob {
 	 * 
 	 */
 	public static class Map extends MapReduceBase implements
-			Mapper<LongWritable, Text, IntWritable, SolrInputDocument> {
+			Mapper<LongWritable, Text, IntWritable, SolrInputDocumentWritable> {
 
 		private CSVParser p = new CSVParser();
 		private Solate sp;
@@ -80,7 +81,7 @@ public class IndexerJob {
 		}
 
 		public void map(LongWritable key, Text value,
-				OutputCollector<IntWritable, SolrInputDocument> output,
+				OutputCollector<IntWritable, SolrInputDocumentWritable> output,
 				Reporter reporter)
 				throws IOException {
 
@@ -123,7 +124,7 @@ public class IndexerJob {
 				doc.setField("page_i", i);
 				doc.setField("content", docs.get(i));
 				output.collect(new IntWritable(sp.getPartition(doc_id, doc)),
-						doc);
+						new SolrInputDocumentWritable(doc));
 			}
 
 		}
@@ -139,7 +140,7 @@ public class IndexerJob {
 	 * 
 	 */
 	public static class Reduce extends MapReduceBase implements
-			Reducer<IntWritable, SolrInputDocument, Text, IntWritable> {
+			Reducer<IntWritable, SolrInputDocumentWritable, Text, IntWritable> {
 
 		private FileSystem fs;
 		private Path solrHomeDir;
@@ -169,7 +170,8 @@ public class IndexerJob {
 		}
 
 
-		public void reduce(IntWritable key, Iterator<SolrInputDocument> values,
+		public void reduce(IntWritable key,
+				Iterator<SolrInputDocumentWritable> values,
 				OutputCollector<Text, IntWritable> output, Reporter reporter)
 				throws IOException {
 			int slice = key.get();
@@ -180,7 +182,7 @@ public class IndexerJob {
 					.createEmbeddedSolrServer(solrHomeDir, fs, outputShardDir);
 
 			while (values.hasNext()) {
-				SolrInputDocument doc = values.next();
+				SolrInputDocument doc = values.next().getSolrInputDocument();
 				try {
 					solrServer.add(doc);
 				} catch (SolrServerException e) {
@@ -226,8 +228,6 @@ public class IndexerJob {
 
 		JobConf conf = new JobConf(IndexerJob.Map.class);
 		conf.setJobName("JISC2_Indexer");
-		conf.setOutputKeyClass(IntWritable.class);
-		conf.setOutputValueClass(SolrInputDocument.class);
 		conf.setMapperClass(Map.class);
 		conf.setNumMapTasks(4);
 		conf.setCombinerClass(Reduce.class);

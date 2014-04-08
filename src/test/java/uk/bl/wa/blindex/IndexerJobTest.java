@@ -8,15 +8,15 @@ import org.apache.hadoop.io.Text;
 import org.apache.hadoop.mrunit.MapDriver;
 import org.apache.hadoop.mrunit.MapReduceDriver;
 import org.apache.hadoop.mrunit.ReduceDriver;
-import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.hadoop.SolrInputDocumentWritable;
 import org.junit.Before;
 import org.junit.Test;
 
 public class IndexerJobTest {
 
-	MapDriver<LongWritable, Text, IntWritable, SolrInputDocument> mapDriver;
-	ReduceDriver<IntWritable, SolrInputDocument, Text, IntWritable> reduceDriver;
-	MapReduceDriver<LongWritable, Text, IntWritable, SolrInputDocument, Text, IntWritable> mapReduceDriver;
+	MapDriver<LongWritable, Text, IntWritable, SolrInputDocumentWritable> mapDriver;
+	ReduceDriver<IntWritable, SolrInputDocumentWritable, Text, IntWritable> reduceDriver;
+	MapReduceDriver<LongWritable, Text, IntWritable, SolrInputDocumentWritable, Text, IntWritable> mapReduceDriver;
 
 	@Before
 	public void setUp() throws Exception {
