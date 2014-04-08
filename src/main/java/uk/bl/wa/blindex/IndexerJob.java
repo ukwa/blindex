@@ -42,7 +42,7 @@ import au.com.bytecode.opencsv.CSVParser;
 public class IndexerJob {
 	private static final Logger LOG = LoggerFactory.getLogger(IndexerJob.class);
 
-	protected static String solrHomeZipName = "solrHome.zip";
+	protected static String solrHomeZipName = "solr_home.zip";
 
 	/**
 	 * 
