@@ -201,6 +201,7 @@ public class IndexerJob {
 
 			try {
 				solrServer.commit();
+				solrServer.shutdown();
 			} catch (SolrServerException e) {
 				e.printStackTrace();
 				LOG.error("COMMIT " + e);
