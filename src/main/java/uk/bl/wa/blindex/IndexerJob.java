@@ -181,9 +181,12 @@ public class IndexerJob {
 
 			Path outputShardDir = new Path(outputDir, this.shardPrefix + slice);
 
+			LOG.info("Running reducer for " + slice + " > " + outputShardDir);
+
 			//
 			EmbeddedSolrServer solrServer = JISC2TextExtractor
-					.createEmbeddedSolrServer(solrHomeDir, fs, outputShardDir);
+					.createEmbeddedSolrServer(solrHomeDir, fs, outputDir,
+							outputShardDir);
 
 			while (values.hasNext()) {
 				SolrInputDocument doc = values.next().getSolrInputDocument();
@@ -191,10 +194,17 @@ public class IndexerJob {
 					solrServer.add(doc);
 				} catch (SolrServerException e) {
 					e.printStackTrace();
+					LOG.error("ADD " + e);
 				}
-
+				output.collect(new Text("" + key), new IntWritable(1));
 			}
-			output.collect(new Text("" + key), new IntWritable(1));
+
+			try {
+				solrServer.commit();
+			} catch (SolrServerException e) {
+				e.printStackTrace();
+				LOG.error("COMMIT " + e);
+			}
 		}
 
 	}
@@ -249,6 +259,8 @@ public class IndexerJob {
 				"/user/admin/jisc2-xmls/table_sample.csv"));
 		// /user/admin/jist2/solr
 		FileOutputFormat.setOutputPath(conf, new Path("/user/admin/jisc2/job"));
+
+		conf.setSpeculativeExecution(false);
 
 		// File solrHomeZip = new
 		// File("src/main/resources/jisc2/solr_home.zip");

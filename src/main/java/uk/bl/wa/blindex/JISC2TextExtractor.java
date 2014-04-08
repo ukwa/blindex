@@ -142,7 +142,8 @@ public class JISC2TextExtractor extends DefaultHandler {
 	/* --- */
 
 	public static EmbeddedSolrServer createEmbeddedSolrServer(Path solrHomeDir,
-			FileSystem fs, Path outputShardDir) throws IOException {
+			FileSystem fs, Path outputDir, Path outputShardDir)
+			throws IOException {
 
 		if (solrHomeDir == null) {
 			throw new IOException("Unable to find solr home setting");
@@ -163,7 +164,7 @@ public class JISC2TextExtractor extends DefaultHandler {
 		LOG.info("Attempting to set data dir to:" + dataDirStr);
 		props.setProperty("solr.data.dir", dataDirStr);
 		props.setProperty("solr.home", solrHomeDir.toString());
-		props.setProperty("solr.hdfs.home", outputShardDir.toString());
+		props.setProperty("solr.hdfs.home", "/solr");
 
 		SolrResourceLoader loader = new SolrResourceLoader(
 				solrHomeDir.toString(), null, props);
