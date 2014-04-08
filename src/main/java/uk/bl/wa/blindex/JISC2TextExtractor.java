@@ -162,6 +162,7 @@ public class JISC2TextExtractor extends DefaultHandler {
 		String dataDirStr = solrDataDir.toUri().toString();
 		props.setProperty("solr.data.dir", dataDirStr);
 		props.setProperty("solr.home", solrHomeDir.toString());
+		props.setProperty("solr.hdfs.home", solrHomeDir.toString());
 
 		SolrResourceLoader loader = new SolrResourceLoader(
 				solrHomeDir.toString(), null, props);
