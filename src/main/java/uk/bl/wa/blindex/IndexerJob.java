@@ -196,6 +196,8 @@ public class IndexerJob {
 				OutputCollector<Text, IntWritable> output, Reporter reporter)
 				throws IOException {
 			int slice = key.get();
+			int countTotal = 0;
+			int countFailures = 0;
 
 			Path outputShardDir = new Path(outputDir, this.shardPrefix + slice);
 
@@ -208,13 +210,14 @@ public class IndexerJob {
 
 			while (values.hasNext()) {
 				SolrInputDocument doc = values.next().getSolrInputDocument();
+				countTotal++;
 				try {
 					solrServer.add(doc);
 					output.collect(new Text("" + key), new IntWritable(1));
 				} catch (Exception e) {
 					LOG.error("ERROR " + e + " when adding document "
 							+ doc.getFieldValue("id"));
-					output.collect(new Text("ERROR " + key), new IntWritable(1));
+					countFailures++;
 				}
 			}
 
@@ -224,6 +227,10 @@ public class IndexerJob {
 			} catch (SolrServerException e) {
 				LOG.error("ERROR on commit: " + e);
 			}
+			output.collect(new Text("TOTAL " + key),
+					new IntWritable(countTotal));
+			output.collect(new Text("FAILURES " + key), new IntWritable(
+					countFailures));
 		}
 
 	}
