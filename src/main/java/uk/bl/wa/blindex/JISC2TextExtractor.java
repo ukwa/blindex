@@ -126,11 +126,14 @@ public class JISC2TextExtractor extends DefaultHandler {
 			// Skip empty records:
 			if (txt.get(i).length() == 0)
 				continue;
+			// Page number:
+			int page = i + 1;
+			// Data from
 			// Build up a Solr document:
-			String doc_id = item_id + "/p" + i;
+			String doc_id = item_id + "/p" + page;
 			SolrInputDocument doc = new SolrInputDocument();
 			doc.setField("id", doc_id);
-			doc.setField("page_i", i);
+			doc.setField("page_i", page);
 			doc.setField("content", txt.get(i));
 			System.out.println("shard: " + sp.getPartition(doc_id, doc));
 			sid.add(doc);

@@ -93,10 +93,20 @@ public class IndexerJob {
 				return;
 
 			// Otherwise, grab the content info:
+			// "entityid","entityuid","parentid","simpletitle","contentstreamid","originalname","sizebytes","recordcreated_dt","domid"
 			String entityuid = parts[1];
 			String simpletitle = parts[3];
 			String originalname = parts[5];
+			String recordcreated_dt = parts[7];
 			String domid = parts[8];
+
+			// Split up originalname to get parts
+			String[] on_parts = originalname.replace(".xml", "").split("-");
+			String npid = on_parts[0];
+			String year = on_parts[1];
+			String month = on_parts[2];
+			String day = on_parts[3];
+			String pubdate = year + "-" + month + "-" + day;
 
 			// Construct URL:
 			URL xmlUrl = new URL(domidUrlPrefix + domid);
@@ -114,14 +124,22 @@ public class IndexerJob {
 				// Skip empty records:
 				if (docs.get(i).length() == 0)
 					continue;
+
+				// Page number:
+				int page = i + 1;
+
 				// Build up a Solr document:
-				String doc_id = entityuid + "/p" + i;
+				String doc_id = entityuid + "/p" + page;
 				SolrInputDocument doc = new SolrInputDocument();
 				doc.setField("id", doc_id);
 				doc.setField("simpletitle_s", simpletitle);
+				doc.setField("npid_s", npid);
 				doc.setField("originalname_s", originalname);
 				doc.setField("domid_l", domid);
-				doc.setField("page_i", i);
+				doc.setField("page_i", page);
+				doc.setField("pubdate_dt", pubdate);
+				doc.setField("digidate_dt", recordcreated_dt);
+				doc.setField("year_s", year);
 				doc.setField("content", docs.get(i));
 				output.collect(new IntWritable(sp.getPartition(doc_id, doc)),
 						new SolrInputDocumentWritable(doc));
@@ -192,19 +210,19 @@ public class IndexerJob {
 				SolrInputDocument doc = values.next().getSolrInputDocument();
 				try {
 					solrServer.add(doc);
-				} catch (SolrServerException e) {
-					e.printStackTrace();
-					LOG.error("ADD " + e);
+					output.collect(new Text("" + key), new IntWritable(1));
+				} catch (Exception e) {
+					LOG.error("ERROR " + e + " when adding document "
+							+ doc.getFieldValue("id"));
+					output.collect(new Text("ERROR " + key), new IntWritable(1));
 				}
-				output.collect(new Text("" + key), new IntWritable(1));
 			}
 
 			try {
 				solrServer.commit();
 				solrServer.shutdown();
 			} catch (SolrServerException e) {
-				e.printStackTrace();
-				LOG.error("COMMIT " + e);
+				LOG.error("ERROR on commit: " + e);
 			}
 		}
 
