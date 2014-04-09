@@ -97,7 +97,7 @@ public class IndexerJob {
 			String entityuid = parts[1];
 			String simpletitle = parts[3];
 			String originalname = parts[5];
-			String recordcreated_dt = parts[7];
+			String recordcreated_dt = parts[7].replaceFirst(" ", "T") + "Z";
 			String domid = parts[8];
 
 			// Split up originalname to get parts
@@ -106,7 +106,7 @@ public class IndexerJob {
 			String year = on_parts[1];
 			String month = on_parts[2];
 			String day = on_parts[3];
-			String pubdate = year + "-" + month + "-" + day;
+			String pubdate = year + "-" + month + "-" + day + "T00:00:00Z";
 
 			// Construct URL:
 			URL xmlUrl = new URL(domidUrlPrefix + domid);
