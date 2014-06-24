@@ -12,7 +12,7 @@ import org.apache.solr.hadoop.SolrInputDocumentWritable;
 import org.junit.Before;
 import org.junit.Test;
 
-public class IndexerJobTest {
+public class EmbeddedIndexerJobTest {
 
 	MapDriver<LongWritable, Text, IntWritable, SolrInputDocumentWritable> mapDriver;
 	ReduceDriver<IntWritable, SolrInputDocumentWritable, Text, IntWritable> reduceDriver;

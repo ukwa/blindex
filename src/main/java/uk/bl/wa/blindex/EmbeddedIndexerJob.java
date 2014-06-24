@@ -69,12 +69,13 @@ public class EmbeddedIndexerJob {
 		public void configure(JobConf job) {
 			super.configure(job);
 			//
-			String zkHost = "openstack2.ad.bl.uk:2181,openstack4.ad.bl.uk:2181,openstack5.ad.bl.uk:2181/solr";
-			String collection = "jisc2";
+			String zkHost = job.get("solr.zookeepers");
+			String collection = job.get("solr.collection");
+			//
 			int numShards = 4;
 			sp = new Solate(zkHost, collection, numShards);
 			//
-			domidUrlPrefix = "http://194.66.239.142/did/";
+			domidUrlPrefix = job.get("dls.prefix");
 			docFactory = new JISC2DocumentFactory(domidUrlPrefix);
 		}
 

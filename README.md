@@ -36,3 +36,5 @@ Push selective/open stuff into HIVE? Link graph would be a good one.
 MER Metadata Value is the XML RDF blob.
 1 entity has 6 blobs.
 Xpath them? (RDF indexer would make more sense)
+
+
