@@ -36,8 +36,8 @@ import org.slf4j.LoggerFactory;
  * @author Andrew Jackson <Andrew.Jackson@bl.uk>
  * 
  */
-public class IndexerJob {
-	private static final Logger LOG = LoggerFactory.getLogger(IndexerJob.class);
+public class EmbeddedIndexerJob {
+	private static final Logger LOG = LoggerFactory.getLogger(EmbeddedIndexerJob.class);
 
 	protected static String solrHomeZipName = "solr_home.zip";
 
@@ -217,7 +217,7 @@ public class IndexerJob {
 	 */
 	public static void main(String[] args) throws Exception {
 
-		JobConf conf = new JobConf(IndexerJob.Map.class);
+		JobConf conf = new JobConf(EmbeddedIndexerJob.Map.class);
 		conf.setJobName("JISC2_Indexer");
 		conf.setMapOutputKeyClass(IntWritable.class);
 		conf.setMapOutputValueClass(SolrInputDocumentWritable.class);

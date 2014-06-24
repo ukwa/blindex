@@ -20,8 +20,8 @@ public class IndexerJobTest {
 
 	@Before
 	public void setUp() throws Exception {
-		IndexerJob.Map mapper = new IndexerJob.Map();
-		IndexerJob.Reduce reducer = new IndexerJob.Reduce();
+		EmbeddedIndexerJob.Map mapper = new EmbeddedIndexerJob.Map();
+		EmbeddedIndexerJob.Reduce reducer = new EmbeddedIndexerJob.Reduce();
 
 		mapDriver = MapDriver.newMapDriver(mapper);
 		reduceDriver = ReduceDriver.newReduceDriver(reducer);
