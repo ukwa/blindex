@@ -22,9 +22,11 @@ public class JISC2DocumentFactory {
 	private CSVParser p = new CSVParser();
 
 	private String dlsPrefix = null;
+	private String urlSuffix = null;
 
-	public JISC2DocumentFactory(String dlsPrefix) {
+	public JISC2DocumentFactory(String dlsPrefix, String suffix) {
 		this.dlsPrefix = dlsPrefix;
+		this.urlSuffix = suffix;
 	}
 
 	/**
@@ -43,8 +45,9 @@ public class JISC2DocumentFactory {
 		}
 
 		// If this is the header line, return now:
-		if ("entityid".equals(parts[0]))
+		if ("entityid".equals(parts[0])) {
 			return null;
+		}
 
 		// Otherwise, grab the content info:
 		// "entityid","entityuid","parentid","simpletitle","contentstreamid","originalname","sizebytes","recordcreated_dt","domid"
@@ -65,14 +68,14 @@ public class JISC2DocumentFactory {
 		// Construct URL:
 		URL xmlUrl;
 		try {
-			xmlUrl = new URL(this.dlsPrefix + domid);
+			xmlUrl = new URL(this.dlsPrefix + "/" + domid + this.urlSuffix);
 		} catch (MalformedURLException e1) {
 			e1.printStackTrace();
 			return null;
 		}
 
 		// Pass to the SAX-based parser to collect the outputs:
-		List<String> docs = null;
+		List<SolrNewspaperDocument> docs = null;
 		try {
 			docs = JISC2TextExtractor.extract(xmlUrl.openStream());
 		} catch (Exception e) {
@@ -83,7 +86,7 @@ public class JISC2DocumentFactory {
 		List<SolrInputDocument> solrDocs = new ArrayList<SolrInputDocument>();
 		for (int i = 0; i < docs.size(); i++) {
 			// Skip empty records:
-			if (docs.get(i).length() == 0)
+			if (docs.get(i).getTextLength() == 0)
 				continue;
 
 			// Page number:

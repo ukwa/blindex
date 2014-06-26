@@ -1,6 +1,5 @@
 package uk.bl.wa.blindex;
 
-import java.io.FileInputStream;
 import java.io.FilterWriter;
 import java.io.IOException;
 import java.io.InputStream;
@@ -16,77 +15,76 @@ import javax.xml.parsers.SAXParserFactory;
 import org.apache.hadoop.fs.FileSystem;
 import org.apache.hadoop.fs.Path;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
-import org.apache.solr.client.solrj.impl.CloudSolrServer;
-import org.apache.solr.common.SolrInputDocument;
 import org.apache.solr.core.CoreContainer;
 import org.apache.solr.core.CoreDescriptor;
 import org.apache.solr.core.SolrCore;
 import org.apache.solr.core.SolrResourceLoader;
-import org.apache.solr.hadoop.Solate;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.xml.sax.Attributes;
 import org.xml.sax.SAXException;
 import org.xml.sax.helpers.DefaultHandler;
 
-
 public class JISC2TextExtractor extends DefaultHandler {
 	private static final Logger LOG = LoggerFactory
 			.getLogger(JISC2TextExtractor.class);
-		private List<String> pages = new ArrayList<String>();
-		private Writer w;
-		private FilterWriter fw;
-		private boolean isInText = false;
+	private List<SolrNewspaperDocument> pages = new ArrayList<SolrNewspaperDocument>();
+	private Writer w;
+	private FilterWriter fw;
+	private boolean isInText = false;
 	private int currentPage = 0;
 
-		// invoked when document-parsing is started:
-		public void startDocument() throws SAXException {
-		}
+	// invoked when document-parsing is started:
+	public void startDocument() throws SAXException {
+	}
 
-		// notifies about finish of parsing:
-		public void endDocument() throws SAXException {
-		}
+	// notifies about finish of parsing:
+	public void endDocument() throws SAXException {
+	}
 
-		public void startElement(String uri, String localName, String qName,
-				Attributes attrs) {
-			if ("page".equals(qName)) {
-				currentPage++;
-				this.w = new StringWriter();
-				this.fw = new SpaceTrimWriter(w);
-			}
-			if ("text".equals(qName)) {
-				isInText = true;
-			}
+	public void startElement(String uri, String localName, String qName,
+			Attributes attrs) {
+		if ("page".equals(qName)) {
+			currentPage++;
+			this.w = new StringWriter();
+			this.fw = new SpaceTrimWriter(w);
 		}
-
-		public void characters(char[] ch, int start, int length) {
-			if (this.isInText) {
-				try {
-					fw.write(ch, start, length);
-				} catch (IOException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-			}
+		if ("text".equals(qName)) {
+			isInText = true;
 		}
+	}
 
-		public void endElement(String uri, String localName, String qName) {
-			// End text element:
-			if ("text".equals(qName)) {
-				isInText = false;
-			}
-			// End page element:
-			if ("page".equals(qName)) {
-				pages.add(this.w.toString());
+	public void characters(char[] ch, int start, int length) {
+		if (this.isInText) {
+			try {
+				fw.write(ch, start, length);
+			} catch (IOException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
 			}
 		}
+	}
 
-		public List<String> getOutputTest() {
-			// return this.textBuilder.toString().trim().replace("\n", " ");
-			return this.pages;
+	public void endElement(String uri, String localName, String qName) {
+		// End text element:
+		if ("text".equals(qName)) {
+			isInText = false;
 		}
+		// End page element:
+		if ("page".equals(qName)) {
+			SolrNewspaperDocument d = new SolrNewspaperDocument();
+			d.setText(this.w.toString());
+			pages.add(d);
+		}
+	}
 
-	public static List<String> extract(InputStream is) throws Exception {
+	public List<SolrNewspaperDocument> getSolrDocuments() {
+		// return this.textBuilder.toString().trim().replace("\n", " ");
+		return this.pages;
+	}
+
+	public static List<SolrNewspaperDocument> extract(InputStream is)
+			throws Exception {
 
 		// creates and returns new instance of SAX-implementation:
 		SAXParserFactory factory = SAXParserFactory.newInstance();
@@ -101,45 +99,7 @@ public class JISC2TextExtractor extends DefaultHandler {
 		parser.parse(is, handler);
 
 		//
-		return handler.getOutputTest();
-	}
-
-	public static void main(String[] args) throws Exception {
-		String zkHost = "openstack2.ad.bl.uk:2181,openstack4.ad.bl.uk:2181,openstack5.ad.bl.uk:2181/solr";
-		String collection = "jisc2";
-		int numShards = 4;
-
-		Solate sp = new Solate(zkHost, collection, numShards);
-
-		CloudSolrServer solrServer = new CloudSolrServer(zkHost);
-		solrServer.setDefaultCollection(collection);
-
-		// Extract:
-		List<String> txt = extract(new FileInputStream(
-				"src/test/resources/562949954724281.xml"));
-
-		// Print
-		String item_id = "lsidyv10a49";
-		System.out.println("Pages: " + txt.size());
-		List<SolrInputDocument> sid = new ArrayList<SolrInputDocument>();
-		for (int i = 0; i < txt.size(); i++) {
-			// Skip empty records:
-			if (txt.get(i).length() == 0)
-				continue;
-			// Page number:
-			int page = i + 1;
-			// Data from
-			// Build up a Solr document:
-			String doc_id = item_id + "/p" + page;
-			SolrInputDocument doc = new SolrInputDocument();
-			doc.setField("id", doc_id);
-			doc.setField("page_i", page);
-			doc.setField("content", txt.get(i));
-			System.out.println("shard: " + sp.getPartition(doc_id, doc));
-			sid.add(doc);
-		}
-		solrServer.add(sid);
-		solrServer.commit();
+		return handler.getSolrDocuments();
 	}
 
 	/* --- */

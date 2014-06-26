@@ -68,8 +68,8 @@ public class CloudIndexerJob {
 			String collection = job.get("solr.collection");// "jisc2";
 			String solrServerUri = job.get("solr.httpServer");
 			//
-			domidUrlPrefix = job.get("dls.prefix"); // "http://194.66.239.142/did/";
-			docFactory = new JISC2DocumentFactory(domidUrlPrefix);
+			domidUrlPrefix = job.get("dls.prefix");
+			docFactory = new JISC2DocumentFactory(domidUrlPrefix, "");
 
 			// Set up Solr connection:
 			try {

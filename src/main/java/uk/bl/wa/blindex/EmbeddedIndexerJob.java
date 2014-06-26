@@ -76,7 +76,7 @@ public class EmbeddedIndexerJob {
 			sp = new Solate(zkHost, collection, numShards);
 			//
 			domidUrlPrefix = job.get("dls.prefix");
-			docFactory = new JISC2DocumentFactory(domidUrlPrefix);
+			docFactory = new JISC2DocumentFactory(domidUrlPrefix, "");
 		}
 
 		public void map(LongWritable key, Text value,

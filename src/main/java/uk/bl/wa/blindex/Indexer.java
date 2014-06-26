@@ -20,20 +20,22 @@ import org.slf4j.LoggerFactory;
 public class Indexer {
 	private static final Logger LOG = LoggerFactory.getLogger(Indexer.class);
 
+
 	/**
 	 * @param args
 	 * @throws Exception
 	 */
 	public static void main(String[] args) throws Exception {
-		File input = new File(args[0]);
-		String solrServerUri = args[1];
+		File input = new File(args[0]); // "list.csv"
+		String solrServerUri = args[1]; // "http://localhost:8xxx/solr/collection1"
 		String domidUrlPrefix = args[2]; // "http://194.66.239.142/did/";
-		JISC2DocumentFactory docFactory = new JISC2DocumentFactory(
-				domidUrlPrefix);
 
-		SolrServer solrServer;
+		// Set up the document factory:
+		JISC2DocumentFactory docFactory = new JISC2DocumentFactory(
+				domidUrlPrefix, "");
+
 		// Set up Solr connection:
-		solrServer = new HttpSolrServer(solrServerUri);
+		SolrServer solrServer = new HttpSolrServer(solrServerUri);
 
 		// Go through the input file:
 		BufferedReader in = new BufferedReader(new FileReader(input));
@@ -47,7 +49,7 @@ public class Indexer {
 			try {
 				solrServer.add(docs);
 			} catch (SolrServerException e) {
-				// TODO Auto-generated catch block
+				LOG.error(e.getMessage());
 				e.printStackTrace();
 			}
 
