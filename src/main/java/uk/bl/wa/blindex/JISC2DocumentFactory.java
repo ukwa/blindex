@@ -6,10 +6,7 @@ package uk.bl.wa.blindex;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
 import java.util.List;
-
-import org.apache.solr.common.SolrInputDocument;
 
 import au.com.bytecode.opencsv.CSVParser;
 
@@ -34,7 +31,7 @@ public class JISC2DocumentFactory {
 	 * 
 	 * @param line
 	 */
-	public List<SolrInputDocument> create(String line) {
+	public List<SolrNewspaperDocument> create(String line) {
 		// String[] parts = value.toString().split("\\x01");
 		String[] parts;
 		try {
@@ -83,31 +80,20 @@ public class JISC2DocumentFactory {
 			return null;
 		}
 
-		List<SolrInputDocument> solrDocs = new ArrayList<SolrInputDocument>();
 		for (int i = 0; i < docs.size(); i++) {
-			// Skip empty records:
-			if (docs.get(i).getTextLength() == 0)
-				continue;
-
-			// Page number:
-			int page = i + 1;
+			// Get the document:
+			SolrNewspaperDocument doc = docs.get(i);
 
 			// Build up a Solr document:
-			String doc_id = entityuid + "/p" + page;
-			SolrInputDocument doc = new SolrInputDocument();
-			doc.setField("id", doc_id);
-			doc.setField("simpletitle_s", simpletitle);
-			doc.setField("npid_s", npid);
-			doc.setField("originalname_s", originalname);
-			doc.setField("domid_l", domid);
-			doc.setField("page_i", page);
-			doc.setField("pubdate_dt", pubdate);
-			doc.setField("digidate_dt", recordcreated_dt);
-			doc.setField("year_s", year);
-			doc.setField("content", docs.get(i));
-			solrDocs.add(doc);
+			doc.setField("newspaper_title_s", simpletitle);
+			doc.setField("newspaper_internal_id_s", npid);
+			doc.setField("issue_original_filename_s", originalname);
+			doc.setField("issue_domid_l", domid);
+			doc.setField("issue_pub_date_tdt", pubdate);
+			doc.setField("issue_digi_date_tdt", recordcreated_dt);
+			doc.setField("issue_year_s", year);
 		}
-		return solrDocs;
+		return docs;
 	}
 
 }

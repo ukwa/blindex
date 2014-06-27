@@ -9,6 +9,9 @@ import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
 import java.io.IOException;
+import java.io.PrintStream;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import org.apache.solr.common.SolrInputDocument;
@@ -25,6 +28,8 @@ public class JISC2DocumentFactoryTest {
 
 	private String prefix = "src/test/resources/newspapers-jisc2";
 
+	private static boolean PRINT_SOLR_DOCS = false;
+
 	/**
 	 * @throws java.lang.Exception
 	 */
@@ -37,8 +42,18 @@ public class JISC2DocumentFactoryTest {
 	@Test
 	public void testCreate() {
 		String line = "\"1484\",\"lsidyv10a49\",\"NULL\",\"York Herald\",\"10\",\"YOHD-1877-04-07.xml\",\"7423129\",\"2010-08-27 09:56:59.94\",\"562949954724281\"";
-		List<SolrInputDocument> docs = jdf.create(line);
-		assertEquals("Error when extracting pages.", 13, docs.size());
+		List<SolrNewspaperDocument> docs = jdf.create(line);
+		// Printy:
+		if (PRINT_SOLR_DOCS) {
+			System.out.println("---");
+			for (SolrInputDocument doc : docs) {
+				prettyPrint(System.out, (SolrInputDocument) doc);
+				System.out.println("---");
+			}
+		}
+		// checks:
+		assertEquals("Error when extracting solr documents.", 67, docs.size());
+		assertEquals("Text length: ", 221, docs.get(0).getTextLength());
 	}
 
 	@Test
@@ -52,12 +67,31 @@ public class JISC2DocumentFactoryTest {
 			String value = in.readLine();
 
 			// Pull in the xml and make the Solr documents:
-			List<SolrInputDocument> docs = jdf.create(value.toString());
+			List<SolrNewspaperDocument> docs = jdf.create(value
+					.toString());
 			if (docs != null)
 				totalRecords += docs.size();
 		}
+		in.close();
 		//
-		assertEquals("Error when extracting pages.", 13, totalRecords);
+		assertEquals("Error when extracting pages.", 67, totalRecords);
 	}
 
+	/**
+	 * Pretty-print each solrDocument in the results to stdout
+	 * 
+	 * @param out
+	 * @param doc
+	 */
+	private static void prettyPrint(PrintStream out, SolrInputDocument doc) {
+		List<String> sortedFieldNames = new ArrayList<String>(
+				doc.getFieldNames());
+		Collections.sort(sortedFieldNames);
+		out.println();
+		for (String field : sortedFieldNames) {
+			out.println(String.format("%s: %.100s", field,
+					doc.getFieldValue(field)));
+		}
+		out.println();
+	}
 }

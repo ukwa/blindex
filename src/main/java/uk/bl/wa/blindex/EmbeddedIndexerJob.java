@@ -5,6 +5,7 @@ import java.net.URI;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import java.util.Properties;
 
 import org.apache.hadoop.filecache.DistributedCache;
 import org.apache.hadoop.fs.FileSystem;
@@ -26,6 +27,10 @@ import org.apache.hadoop.mapred.TextOutputFormat;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.embedded.EmbeddedSolrServer;
 import org.apache.solr.common.SolrInputDocument;
+import org.apache.solr.core.CoreContainer;
+import org.apache.solr.core.CoreDescriptor;
+import org.apache.solr.core.SolrCore;
+import org.apache.solr.core.SolrResourceLoader;
 import org.apache.solr.hadoop.Solate;
 import org.apache.solr.hadoop.SolrInputDocumentWritable;
 import org.slf4j.Logger;
@@ -85,7 +90,8 @@ public class EmbeddedIndexerJob {
 				throws IOException {
 
 			// Pull in the xml and make the Solr documents:
-			List<SolrInputDocument> docs = docFactory.create(value.toString());
+			List<SolrNewspaperDocument> docs = docFactory.create(value
+					.toString());
 
 			// Group them by shard number:
 			for (SolrInputDocument doc : docs) {
@@ -153,8 +159,8 @@ public class EmbeddedIndexerJob {
 			LOG.info("Running reducer for " + slice + " > " + outputShardDir);
 
 			//
-			EmbeddedSolrServer solrServer = JISC2TextExtractor
-					.createEmbeddedSolrServer(solrHomeDir, fs, outputDir,
+			EmbeddedSolrServer solrServer = createEmbeddedSolrServer(
+					solrHomeDir, fs, outputDir,
 							outputShardDir);
 
 			while (values.hasNext()) {
@@ -250,5 +256,61 @@ public class EmbeddedIndexerJob {
 
 		JobClient.runJob(conf);
 
+	}
+
+	public static EmbeddedSolrServer createEmbeddedSolrServer(Path solrHomeDir,
+			FileSystem fs, Path outputDir, Path outputShardDir)
+			throws IOException {
+
+		if (solrHomeDir == null) {
+			throw new IOException("Unable to find solr home setting");
+		}
+		LOG.info("Creating embedded Solr server with solrHomeDir: "
+				+ solrHomeDir + ", fs: " + fs + ", outputShardDir: "
+				+ outputShardDir);
+
+		Properties props = new Properties();
+		// FIXME note this is odd (no scheme) given Solr doesn't currently
+		// support uris (just abs/relative path)
+		Path solrDataDir = new Path(outputShardDir, "data");
+		if (!fs.exists(solrDataDir) && !fs.mkdirs(solrDataDir)) {
+			throw new IOException("Unable to create " + solrDataDir);
+		}
+
+		String dataDirStr = solrDataDir.toUri().toString();
+		LOG.info("Attempting to set data dir to:" + dataDirStr);
+		props.setProperty("solr.data.dir", dataDirStr);
+		props.setProperty("solr.home", solrHomeDir.toString());
+		props.setProperty("solr.solr.home", solrHomeDir.toString());
+		props.setProperty("solr.hdfs.home", outputDir.toString());
+
+		SolrResourceLoader loader = new SolrResourceLoader(
+				solrHomeDir.toString(), null, props);
+
+		LOG.info(String
+				.format("Constructed instance information solr.home %s (%s), instance dir %s, conf dir %s, writing index to solr.data.dir %s, with permdir %s",
+						solrHomeDir, solrHomeDir.toUri(),
+						loader.getInstanceDir(), loader.getConfigDir(),
+						dataDirStr, outputShardDir));
+
+		CoreContainer container = new CoreContainer(loader);
+		container.load();
+		LOG.error("Setting up core1 descriptor...");
+		CoreDescriptor descr = new CoreDescriptor(container, "core1", new Path(
+				solrHomeDir, "jisc2").toString());
+
+		descr.setDataDir(dataDirStr);
+		descr.setCoreProperties(props);
+		LOG.error("Creating core1... " + descr.getConfigName());
+		SolrCore core = container.create(descr);
+		LOG.error("Registering core1...");
+		container.register(core, false);
+
+		System.setProperty("solr.hdfs.nrtcachingdirectory", "false");
+		System.setProperty("solr.hdfs.blockcache.enabled", "false");
+		System.setProperty("solr.autoCommit.maxTime", "-1");
+		System.setProperty("solr.autoSoftCommit.maxTime", "-1");
+		EmbeddedSolrServer solr = new EmbeddedSolrServer(container, "core1");
+		return solr;
 	}
 }

@@ -43,11 +43,14 @@ public class Indexer {
 			String value = in.readLine();
 
 			// Pull in the xml and make the Solr documents:
-			List<SolrInputDocument> docs = docFactory.create(value.toString());
+			List<SolrNewspaperDocument> docs = docFactory.create(value
+					.toString());
 
 			// Send them to the SolrCloud
 			try {
-				solrServer.add(docs);
+				for (SolrInputDocument doc : docs) {
+					solrServer.add(doc);
+				}
 			} catch (SolrServerException e) {
 				LOG.error(e.getMessage());
 				e.printStackTrace();

@@ -89,11 +89,14 @@ public class CloudIndexerJob {
 				throws IOException {
 
 			// Pull in the xml and make the Solr documents:
-			List<SolrInputDocument> docs = docFactory.create(value.toString());
+			List<SolrNewspaperDocument> docs = docFactory.create(value
+					.toString());
 
 			// Send them to the SolrCloud
 			try {
-				solrServer.add(docs);
+				for (SolrInputDocument doc : docs) {
+					solrServer.add(doc);
+				}
 				output.collect("GOOD", new IntWritable(docs.size()));
 			} catch (SolrServerException e) {
 				// TODO Auto-generated catch block
