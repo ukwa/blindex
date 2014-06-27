@@ -94,8 +94,9 @@ public class JISC2TextExtractor extends DefaultHandler {
 			state = State.ARTICLE;
 
 		} else if ("ti".equals(qName) && state == State.ARTICLE) {
-			d.setField("article_title_s",
-					ew.toString().trim().replace("\n", " "));
+			String art_title = ew.toString().trim().replace("\n", " ");
+			LOG.debug("Found article title: " + art_title);
+			d.setField("article_title_s",art_title);
 
 		} else if ("ct".equals(qName) && state == State.ARTICLE) {
 			d.setField("article_type_s",
@@ -109,6 +110,7 @@ public class JISC2TextExtractor extends DefaultHandler {
 			String art_id = ew.toString().trim().replace("\n", " ");
 			d.setField("article_id_s", art_id);
 			d.setField("id", "JISC2-" + art_id);
+			LOG.debug("Found article id: " + art_id);
 
 		} else if ("article".equals(qName)) {
 			// End article
