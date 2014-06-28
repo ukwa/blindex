@@ -1,7 +1,6 @@
 package uk.bl.wa.blindex;
 
 import java.io.IOException;
-import java.net.MalformedURLException;
 import java.util.Iterator;
 import java.util.List;
 
@@ -23,7 +22,6 @@ import org.apache.hadoop.mapred.TextOutputFormat;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.CloudSolrServer;
-import org.apache.solr.client.solrj.impl.HttpSolrServer;
 import org.apache.solr.common.SolrInputDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -72,15 +70,8 @@ public class CloudIndexerJob {
 			docFactory = new JISC2DocumentFactory(domidUrlPrefix, "");
 
 			// Set up Solr connection:
-			try {
-				solrServer = new CloudSolrServer(zkHost);
-				((CloudSolrServer) solrServer).setDefaultCollection(collection);
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-				return;
-			}
-			// Plain old http connection:
-			solrServer = new HttpSolrServer(solrServerUri);
+			solrServer = new CloudSolrServer(zkHost);
+			((CloudSolrServer) solrServer).setDefaultCollection(collection);
 		}
 
 		public void map(LongWritable key, Text value,

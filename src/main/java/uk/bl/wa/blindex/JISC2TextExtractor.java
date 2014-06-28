@@ -79,7 +79,7 @@ public class JISC2TextExtractor extends DefaultHandler {
 			if (this.isInText) {
 				fw.write(ch, start, length);
 			} else {
-					ew.write(ch, start, length);
+				ew.write(ch, start, length);
 			}
 		} catch (IOException e) {
 			// TODO Auto-generated catch block
@@ -114,7 +114,7 @@ public class JISC2TextExtractor extends DefaultHandler {
 
 		} else if ("article".equals(qName)) {
 			// End article
-			d.setText(this.w.toString());
+			d.setText(this.w.toString().trim());
 			d.setPage(this.currentPage);
 			d.setField("page_i", currentPage);
 			d.setField("article_i", currentArticle);

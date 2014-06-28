@@ -8,7 +8,6 @@ import java.util.List;
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
-import org.apache.solr.common.SolrInputDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -20,7 +19,6 @@ import org.slf4j.LoggerFactory;
 public class Indexer {
 	private static final Logger LOG = LoggerFactory.getLogger(Indexer.class);
 
-
 	/**
 	 * @param args
 	 * @throws Exception
@@ -29,10 +27,14 @@ public class Indexer {
 		File input = new File(args[0]); // "list.csv"
 		String solrServerUri = args[1]; // "http://localhost:8xxx/solr/collection1"
 		String domidUrlPrefix = args[2]; // "http://194.66.239.142/did/";
+		String suffix = "";
+		if (args.length >= 4) {
+			suffix = ".xml";
+		}
 
 		// Set up the document factory:
 		JISC2DocumentFactory docFactory = new JISC2DocumentFactory(
-				domidUrlPrefix, "");
+				domidUrlPrefix, suffix);
 
 		// Set up Solr connection:
 		SolrServer solrServer = new HttpSolrServer(solrServerUri);
@@ -47,17 +49,24 @@ public class Indexer {
 					.toString());
 
 			// Send them to the SolrCloud
-			try {
-				for (SolrInputDocument doc : docs) {
-					solrServer.add(doc);
+			if (docs != null) {
+				LOG.info("Got docs: " + docs.size());
+				try {
+					for (SolrNewspaperDocument doc : docs) {
+						solrServer.add(doc);
+						LOG.debug("Send doc: "
+								+ doc.getFieldValue("article_title_s"));
+					}
+				} catch (SolrServerException e) {
+					LOG.error(e.getMessage());
+					e.printStackTrace();
 				}
-			} catch (SolrServerException e) {
-				LOG.error(e.getMessage());
-				e.printStackTrace();
 			}
 
 		}
 		// Clean up:
 		in.close();
+		// Commit:
+		solrServer.commit();
 	}
 }

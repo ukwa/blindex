@@ -4,12 +4,19 @@
 package uk.bl.wa.blindex;
 
 import org.apache.solr.common.SolrInputDocument;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author Andrew Jackson <Andrew.Jackson@bl.uk>
  *
  */
 public class SolrNewspaperDocument extends SolrInputDocument {
+	private static final Logger LOG = LoggerFactory
+			.getLogger(SolrNewspaperDocument.class);
+
+	private String text_field = "content";
+	private String length_field = "article_text_length_ti";
 
 	/**
 	 * 
@@ -21,18 +28,19 @@ public class SolrNewspaperDocument extends SolrInputDocument {
 	 * @param text
 	 */
 	public void setText(String text) {
-		this.setField("content", text);
-		this.setField("content_length_ti", text.length());
+		LOG.debug("Setting text: " + String.format("%.100s", text));
+		this.setField(text_field, text);
+		this.setField(length_field, text.length());
 	}
 
 	public String getText() {
-		return (String) this.getFieldValue("content");
+		return (String) this.getFieldValue(text_field);
 	}
 
 	public int getTextLength() {
-		if (this.getFieldValue("content_length_ti") == null)
+		if (this.getFieldValue(length_field) == null)
 			return 0;
-		return (Integer) this.getFieldValue("content_length_ti");
+		return (Integer) this.getFieldValue(length_field);
 	}
 
 	/**

@@ -299,8 +299,8 @@ public class EmbeddedIndexerJob {
 		CoreDescriptor descr = new CoreDescriptor(container, "core1", new Path(
 				solrHomeDir, "jisc2").toString());
 
-		descr.setDataDir(dataDirStr);
-		descr.setCoreProperties(props);
+		// descr.setDataDir(dataDirStr);
+		// descr.setCoreProperties(props);
 		LOG.error("Creating core1... " + descr.getConfigName());
 		SolrCore core = container.create(descr);
 		LOG.error("Registering core1...");
