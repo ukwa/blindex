@@ -32,7 +32,7 @@ public class Indexer {
 		long lineCounter = 0;
 
 		if (args.length >= 4) {
-			suffix = ".xml";
+			suffix = args[3];
 		}
 
 		// Set up the document factory:
