@@ -28,6 +28,9 @@ public class Indexer {
 		String solrServerUri = args[1]; // "http://localhost:8xxx/solr/collection1"
 		String domidUrlPrefix = args[2]; // "http://194.66.239.142/did/";
 		String suffix = "";
+
+		long lineCounter = 0;
+
 		if (args.length >= 4) {
 			suffix = ".xml";
 		}
@@ -43,6 +46,7 @@ public class Indexer {
 		BufferedReader in = new BufferedReader(new FileReader(input));
 		while (in.ready()) {
 			String value = in.readLine();
+			lineCounter++;
 
 			// Pull in the xml and make the Solr documents:
 			List<SolrNewspaperDocument> docs = docFactory.create(value
@@ -50,7 +54,9 @@ public class Indexer {
 
 			// Send them to the SolrCloud
 			if (docs != null) {
-				LOG.info("Got docs: " + docs.size());
+				LOG.info("For line " + lineCounter + " got " + docs.size()
+						+ " docs. Title[0] = "
+						+ docs.get(0).getFieldValue("article_title_s"));
 				try {
 					for (SolrNewspaperDocument doc : docs) {
 						solrServer.add(doc);
