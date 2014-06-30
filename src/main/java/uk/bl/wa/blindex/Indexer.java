@@ -3,11 +3,13 @@ package uk.bl.wa.blindex;
 import java.io.BufferedReader;
 import java.io.File;
 import java.io.FileReader;
+import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.solr.client.solrj.SolrServer;
 import org.apache.solr.client.solrj.SolrServerException;
 import org.apache.solr.client.solrj.impl.HttpSolrServer;
+import org.apache.solr.common.SolrInputDocument;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,12 +59,16 @@ public class Indexer {
 				LOG.info("For line " + lineCounter + " got " + docs.size()
 						+ " docs. Title[0] = "
 						+ docs.get(0).getFieldValue("article_title_s"));
+				List<SolrInputDocument> sindocs = new ArrayList<SolrInputDocument>();
+				for (SolrNewspaperDocument doc : docs) {
+					sindocs.add(doc);
+					LOG.debug("Got doc with title: "
+							+ doc.getFieldValue("article_title_s"));
+				}
+				// And send to Solr:
 				try {
-					for (SolrNewspaperDocument doc : docs) {
-						solrServer.add(doc);
-						LOG.debug("Send doc: "
-								+ doc.getFieldValue("article_title_s"));
-					}
+					LOG.debug("Sending " + sindocs.size() + " docs to Solr...");
+					solrServer.add(sindocs);
 				} catch (SolrServerException e) {
 					LOG.error(e.getMessage());
 					e.printStackTrace();
