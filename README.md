@@ -1,11 +1,6 @@
 blindex
 =======
 
-http://194.66.239.142/did/
-281474978788939
-562949954724281.xml
-562949954724960.mets.xml
-
 https://cwiki.apache.org/confluence/display/Hive/HCatalog+InputOutput
 http://www.cloudera.com/content/cloudera-content/cloudera-docs/CDH4/latest/CDH4-Installation-Guide/cdh4ig_topic_19_6.html
 http://java.dzone.com/articles/mapreduce-hive-tables-using
@@ -21,15 +16,6 @@ https://github.com/cloudera/search/blob/ca9e12894ce4f539dc451dfa9f5ada9b5762a499
 
 
 ---
-
-JISC2 = stream id 10
-MS Books = stream id 3
-12 ESTAR
-BrightSolid ?
-Playbills, 18.
-eJournals?
-
-7-8-9-10 are the beefier machines
 
 Push selective/open stuff into HIVE? Link graph would be a good one.
 
