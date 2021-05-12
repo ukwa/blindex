@@ -34,7 +34,7 @@
    </scm>
    <properties>
       <tika.version>1.5</tika.version>
-      <solr.version>4.8.1</solr.version>
+      <solr.version>8.8.2</solr.version>
       <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
    </properties>
    <build>
